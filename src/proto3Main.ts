@@ -15,9 +15,9 @@ import { Proto3RenameProvider } from './proto3Rename';
 
 export function activate(ctx: vscode.ExtensionContext): void {
 
+    const workspaceFolder = vscode.workspace.workspaceFolders[0];
     ctx.subscriptions.push(vscode.languages.registerCompletionItemProvider(PROTO3_MODE, new Proto3CompletionItemProvider(), '.', '\"'));
-    ctx.subscriptions.push(vscode.languages.registerDefinitionProvider(PROTO3_MODE, new Proto3DefinitionProvider()));
-    ctx.subscriptions.push(vscode.languages.registerRenameProvider(PROTO3_MODE, new Proto3RenameProvider()));
+    ctx.subscriptions.push(vscode.languages.registerDefinitionProvider(PROTO3_MODE, new Proto3DefinitionProvider(workspaceFolder)));
 
     const diagnosticProvider = new Proto3LanguageDiagnosticProvider();
 
