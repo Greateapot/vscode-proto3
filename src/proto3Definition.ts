@@ -63,12 +63,11 @@ export class Proto3DefinitionProvider implements vscode.DefinitionProvider {
     }
 
     private async findEnumOrMessageDefinition(document: vscode.TextDocument, target: string): Promise<vscode.Location> {
-
         const searchPaths = Proto3Import.getImportedFilePathsOnDocument(document, this._config.getProtoSrcsDir());
 
         const files = [
             document.uri.fsPath,
-            ...(await fg(searchPaths))
+            ...(await fg.glob(searchPaths.map(fg.convertPathToPattern)))
         ];
 
         for (const file of files) {
@@ -87,16 +86,16 @@ export class Proto3DefinitionProvider implements vscode.DefinitionProvider {
     }
 
     private async findImportDefinition(importFileName: string): Promise<vscode.Location> {
-        const files = await fg(path.join(vscode.workspace.rootPath, this._config.getProtoSrcsDir(), '**', importFileName));
+        const files = await fg.glob(fg.convertPathToPattern(path.join(
+            vscode.workspace.rootPath,
+            this._config.getProtoSrcsDir(),
+            '**',
+            importFileName,
+        )));
         const importPath = files[0].toString();
-        // const data = fs.readFileSync(importPath);
-        // const lines = data.toString().split('\n');
-        // const lastLine = lines[lines.length  - 1];
         const uri = vscode.Uri.file(importPath);
-        const definitionStartPosition = new vscode.Position(0, 0);
-        const definitionEndPosition = new vscode.Position(0, 0);
-        const range = new vscode.Range(definitionStartPosition, definitionEndPosition);
-        return new vscode.Location(uri, range);
+        const position = new vscode.Position(0, 0);
+        return new vscode.Location(uri, position);
     }
 
     private getTargetLocationInline(lineIndex: number, line: string, target: string, definitionRegexMatch: RegExpExecArray): vscode.Range {

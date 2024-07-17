@@ -10,7 +10,7 @@ const SCOPE_END = /\s*\}.*/;
 
 
 export function guessScope(doc: vscode.TextDocument,
-                           cursorLineNum: number): Proto3Scope {
+    cursorLineNum: number): Proto3Scope {
     return new ScopeGuesser(cursorLineNum).guess(doc);
 }
 
@@ -102,7 +102,7 @@ class ScopeGuesser {
         this.currentScope.lineTo = lineNum;
         if (!this.scopeAtCursor) {
             if (this.currentScope.lineFrom <= this.cursorLineNum
-                    && this.currentScope.lineTo >= this.cursorLineNum) {
+                && this.currentScope.lineTo >= this.cursorLineNum) {
                 this.scopeAtCursor = this.currentScope;
             }
         }
@@ -110,5 +110,5 @@ class ScopeGuesser {
             this.currentScope = this.currentScope.parent;
         }
     }
-    
+
 }

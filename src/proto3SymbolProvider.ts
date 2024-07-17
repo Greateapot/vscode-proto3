@@ -20,13 +20,13 @@ export class Proto3DocumentSymbolProvider implements DocumentSymbolProvider {
     const ret: SymbolInformation[] = [];
 
     // Retrieve tokens if previously cached
-    if (cache[doc.uri+'__'+doc.version]) {
-      return cache[doc.uri+'__'+doc.version]
+    if (cache[doc.uri + '__' + doc.version]) {
+      return cache[doc.uri + '__' + doc.version]
     }
 
     // remove preceding cache entry
-    if (cache[doc.uri+'__'+(doc.version - 1)]) {
-      delete cache[doc.uri+'__'+(doc.version - 1)]
+    if (cache[doc.uri + '__' + (doc.version - 1)]) {
+      delete cache[doc.uri + '__' + (doc.version - 1)]
     }
 
     // create cache entry
@@ -74,7 +74,7 @@ export class Proto3DocumentSymbolProvider implements DocumentSymbolProvider {
       }
     }
 
-    cache[doc.uri+'__'+doc.version] = ret
+    cache[doc.uri + '__' + doc.version] = ret
 
     return ret;
   }

@@ -18,5 +18,4 @@ export module Proto3Import {
         }
         return importPaths;
     }
-
 }

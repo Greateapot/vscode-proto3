@@ -17,7 +17,7 @@ export class Proto3LanguageDiagnosticProvider {
             }
         })
     }
-    
+
     private analyzeErrors(stderr: string, doc: vscode.TextDocument) {
         let shortFileName = path.parse(doc.fileName).name;
         let diagnostics = stderr.split('\n')
@@ -35,15 +35,15 @@ export class Proto3LanguageDiagnosticProvider {
         }
         let startLine = parseInt(errorInfo[1]) - 1;
         let startCol = parseInt(errorInfo[2]) - 1;
-        
+
         // protoc calculates tab width (eight spaces) and returns colunm number.
         let line = doc.lineAt(startLine);
         let startChar = 0;
         let col = 0;
-        for(var c of line.text) {
-            col += ( c === "\t" ? (8 - col % 8): 1 );
+        for (var c of line.text) {
+            col += (c === "\t" ? (8 - col % 8) : 1);
             startChar += 1;
-            if( col >= startCol ) {
+            if (col >= startCol) {
                 break;
             }
         }

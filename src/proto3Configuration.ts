@@ -78,7 +78,7 @@ export class Proto3Configuration {
 
 class ProtoFinder {
     static fromDir(root: string): string[] {
-        let search = function(dir: string): string[] {
+        let search = function (dir: string): string[] {
             let files = fs.readdirSync(dir);
 
             let protos = files.filter(file => file.endsWith('.proto'))
@@ -96,7 +96,7 @@ class ProtoFinder {
     }
 
     static fromDirAbsolute(root: string): string[] {
-        let files : string[] = [];
+        let files: string[] = [];
         const getFilesRecursively = (directory) => {
             const filesInDirectory = fs.readdirSync(directory);
             for (const file of filesInDirectory) {
