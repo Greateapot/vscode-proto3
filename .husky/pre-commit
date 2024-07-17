@@ -2,3 +2,5 @@
 # . "$(dirname "$0")/_/husky.sh"
 
 # npx pretty-quick --staged
+
+# Sorry, idk what is that and how to use it :-(
