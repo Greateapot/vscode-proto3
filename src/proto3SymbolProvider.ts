@@ -20,30 +20,25 @@ export class Proto3DocumentSymbolProvider implements DocumentSymbolProvider {
     const ret: SymbolInformation[] = [];
 
     // Retrieve tokens if previously cached
-    if (cache[doc.uri+'__'+doc.version]) {
-      return cache[doc.uri+'__'+doc.version]
+    if (cache[doc.uri + '__' + doc.version]) {
+      return cache[doc.uri + '__' + doc.version]
     }
 
     // remove preceding cache entry
-    if (cache[doc.uri+'__'+(doc.version - 1)]) {
-      delete cache[doc.uri+'__'+(doc.version - 1)]
+    if (cache[doc.uri + '__' + (doc.version - 1)]) {
+      delete cache[doc.uri + '__' + (doc.version - 1)]
     }
 
     // create cache entry
     const tokenizer = tokenize(doc.getText(), false);
-    let state: "free" | "rpc" | "message" | 'service' = "free"
+    let state: "free" | "rpc" | "message" | "service" | "enum" = "free"
     for (let tok = tokenizer.next(); tok !== null; tok = tokenizer.next()) {
       switch (tok) {
         case "message":
-          state = "message";
-          break;
-
         case "rpc":
-          state = "rpc";
-          break;
-
-        case 'service':
-          state = 'service';
+        case "service":
+        case "enum":
+          state = tok;
           break;
 
         default:
@@ -69,6 +64,9 @@ export class Proto3DocumentSymbolProvider implements DocumentSymbolProvider {
             case 'service':
               kind = SymbolKind.Class;
               break;
+            case 'enum':
+              kind = SymbolKind.Enum;
+              break;
           }
           ret.push(new SymbolInformation(tok, kind, "", location));
           state = "free";
@@ -76,7 +74,7 @@ export class Proto3DocumentSymbolProvider implements DocumentSymbolProvider {
       }
     }
 
-    cache[doc.uri+'__'+doc.version] = ret
+    cache[doc.uri + '__' + doc.version] = ret
 
     return ret;
   }

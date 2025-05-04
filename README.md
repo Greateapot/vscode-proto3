@@ -35,9 +35,9 @@ The grammar is written in tmLanguage JSON format.
 
 ### Syntax Validation
 
-The validation is triggered when you save the proto file. You need protoc 
-compiler to enable syntax validation. You also need a settings.json file 
-to tell the extension the full path of protoc if it is not in `path`. 
+See [this](https://github.com/yoheimuta/protolint) for lint configuration (`.protolint.yaml`).
+Also ensure that `protolint` is installed.
+
 
 ### Extension Settings
 
@@ -47,7 +47,6 @@ Below is an example settings.json file which comes from
 {
     "protoc": {
         "path": "/path/to/protoc",
-        "compile_on_save": false,
         "options": [
             "--proto_path=protos/v3",
             "--proto_path=protos/v2",
@@ -66,7 +65,6 @@ The possible fields under the `protoc` extension settings which can be defined i
 | Field            | Type     | Default          | Description                                                                    |
 | ---------------- | -------- | ---------------- | ------------------------------------------------------------------------------ |
 | path             | string   | _protoc in PATH_ | Path to protoc. Defaults to protoc in PATH if omitted.                         |
-| compile_on_save  | boolean  | false            | On `.proto` file save, compiles to `--*_out` location within `options`         |
 | compile_all_path | string   | Workspace Root   | Search Path for `Compile All Protos` action. Defaults to the Workspace Root    |
 | use_absolute_path| boolean  | false            | Set `true` for `compile_all_path` search files using absolute path             |
 | options          | string[] | []               | protoc compiler arguments/flags, required for proto validation and compilation |
@@ -136,7 +134,20 @@ The following snippets are based on
 
 Support "Format Document" if `clang-format` is in path, including custom `style` options.
 
-By default, `clang-format`'s standard coding style will be used for formatting. To define a custom style or use a supported preset add `"clang-format.style"` in VSCode Settings (`settings.json`)
+By default, `clang-format`'s standard coding style will be used for formatting. To define a custom style or use a supported preset add `"clang-format.style"` in VSCode Settings (`settings.json`). Example:
+```json
+{
+    "clang-format.style": "{BasedOnStyle: Google, IndentWidth: 2}",
+    "protoc": {
+        "path": "/usr/local/bin/protoc",
+        "options": [
+            "--proto_path=protos/v3",
+            "--proto_path=protos/v2",
+            "--java_out=gen/java"
+        ]
+    }
+}
+```
 
 ### Example usage:
 `"clang-format.style": "google"`

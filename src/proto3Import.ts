@@ -3,7 +3,7 @@
 import path = require('path');
 import vscode = require('vscode');
 
-export module Proto3Import {
+export namespace Proto3Import {
 
     export const importStatementRegex = new RegExp(/^\s*import\s+('|")(.+\.proto)('|")\s*;\s*$/gim);
 

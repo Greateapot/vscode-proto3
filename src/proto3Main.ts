@@ -5,13 +5,12 @@ import * as path from 'path';
 import vscode = require('vscode');
 import cp = require('child_process');
 import { Proto3CompletionItemProvider } from './proto3Suggest';
-import { Proto3LanguageDiagnosticProvider } from './proto3Diagnostic';
 import { Proto3Compiler } from './proto3Compiler';
 import { PROTO3_MODE } from './proto3Mode';
 import { Proto3DefinitionProvider } from './proto3Definition';
-import { Proto3Configuration } from './proto3Configuration';
 import { Proto3DocumentSymbolProvider } from './proto3SymbolProvider';
 import { Proto3RenameProvider } from './proto3Rename';
+import { Proto3Linter } from './proto3Lint';
 
 export function activate(ctx: vscode.ExtensionContext): void {
 
@@ -19,36 +18,38 @@ export function activate(ctx: vscode.ExtensionContext): void {
     ctx.subscriptions.push(vscode.languages.registerDefinitionProvider(PROTO3_MODE, new Proto3DefinitionProvider()));
     ctx.subscriptions.push(vscode.languages.registerRenameProvider(PROTO3_MODE, new Proto3RenameProvider()));
 
-    const diagnosticProvider = new Proto3LanguageDiagnosticProvider();
+    const diagnosticCollection = vscode.languages.createDiagnosticCollection("proto3-lint");
 
     vscode.languages.registerDocumentSymbolProvider('proto3', new Proto3DocumentSymbolProvider())
 
-    vscode.workspace.onDidSaveTextDocument(event => {
-        if (event.languageId == 'proto3') {
-            const workspaceFolder = vscode.workspace.getWorkspaceFolder(event.uri);
-            const compiler = new Proto3Compiler(workspaceFolder);
-            diagnosticProvider.createDiagnostics(event, compiler);
-            if (Proto3Configuration.Instance(workspaceFolder).compileOnSave()) {
-                compiler.compileActiveProto();
-            }
-        }
+    vscode.workspace.onDidSaveTextDocument((document: vscode.TextDocument) => {
+        vscode.commands.executeCommand('proto3.lint');
+    });
+
+    vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
+        vscode.commands.executeCommand('proto3.lint');
     });
 
     ctx.subscriptions.push(vscode.commands.registerCommand('proto3.compile.one', () => {
         const currentFile = vscode.window.activeTextEditor?.document;
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(currentFile.uri)
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(currentFile.uri);
         const compiler = new Proto3Compiler(workspaceFolder);
         compiler.compileActiveProto();
     }));
 
     ctx.subscriptions.push(vscode.commands.registerCommand('proto3.compile.all', () => {
         const currentFile = vscode.window.activeTextEditor?.document;
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(currentFile.uri)
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(currentFile.uri);
         const compiler = new Proto3Compiler(workspaceFolder);
         compiler.compileAllProtos();
     }));
 
-    //console.log('Congratulations, your extension "vscode-pb3" is now active!');
+    ctx.subscriptions.push(vscode.commands.registerCommand('proto3.lint', () => {
+        const currentFile = vscode.window.activeTextEditor?.document;
+        if (currentFile.languageId != 'proto3') { return; }
+        const linter = new Proto3Linter(currentFile, diagnosticCollection);
+        linter.lint();
+    }));
 
     vscode.languages.setLanguageConfiguration(PROTO3_MODE.language, {
         indentationRules: {

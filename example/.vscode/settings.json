@@ -1,4 +1,5 @@
 {
+    "clang-format.style": "{BasedOnStyle: Google, AlignConsecutiveDeclarations: true, AlignConsecutiveAssignments: true,  ColumnLimit: 0, IndentWidth: 2}",
     "protoc": {
         "path": "/usr/local/bin/protoc",
         "options": [

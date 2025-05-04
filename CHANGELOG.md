@@ -1,5 +1,13 @@
 ## Release Notes
 
+### 0.5.6
+- Syntax Validation now works using [protolint](https://github.com/yoheimuta/protolint)
+- [`compile_on_save` option](https://github.com/zxh0/vscode-proto3#fields) removed (may be reverted later)
+- fix: Syntax highlighting for multiple strings in 1 line (pr#179)
+- fix: Validation highlighting and problem reporting (pr#177)
+- fix: Update proto3.tmLanguage.json to fix some syntax highlighting bugs (pr#171)
+- fix: Show enums within the document outline (pr#170)
+
 ### 0.5.5
 - improve code completion experience, support go to service symbol in editor (pr#113, pr#115)
 - fix issue #101 and #102 (pr#111)

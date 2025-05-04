@@ -1,6 +1,5 @@
 "use strict";
 
-import fs = require("fs");
 import path = require("path");
 import vscode = require("vscode");
 import fg = require("fast-glob");

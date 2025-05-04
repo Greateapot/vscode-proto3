@@ -2,7 +2,7 @@ import { ITokenizerHandle, tokenize } from "protobufjs";
 import * as vscode from "vscode";
 
 class position {
-  constructor(public line: number, public col: number) {}
+  constructor(public line: number, public col: number) { }
 
   static from(pos: position): position {
     return Object.assign(new position(0, 0), pos);
@@ -10,7 +10,7 @@ class position {
 }
 
 class token {
-  constructor(public tok: string, public pos: position) {}
+  constructor(public tok: string, public pos: position) { }
 }
 
 class tokenizer {
@@ -91,7 +91,7 @@ class scope {
     public sym: "(" | "{",
     public pos: position,
     public end: position = null
-  ) {}
+  ) { }
 }
 
 // check is pos inside range(begin,end)
@@ -118,7 +118,7 @@ export function SyntacticGuessScope(document: vscode.TextDocument, cursorPositio
       case "message": {
         // take next token until reach left brace
         let t = tkn.next();
-        for (; t !== null && t.tok !== "{"; t = tkn.next()) {}
+        for (; t !== null && t.tok !== "{"; t = tkn.next()) { }
         stack.push(new scope("message", "{", position.from(t.pos)));
 
         break;
@@ -126,28 +126,28 @@ export function SyntacticGuessScope(document: vscode.TextDocument, cursorPositio
       case "enum": {
         // take next token until reach left brace
         let t = tkn.next();
-        for (; t !== null && t.tok !== "{"; t = tkn.next()) {}
+        for (; t !== null && t.tok !== "{"; t = tkn.next()) { }
         stack.push(new scope("enum", "{", position.from(t.pos)));
         break;
       }
       case "rpc": {
         // take next token until reach left paren
         let t = tkn.next();
-        for (; t !== null && t.tok !== "("; t = tkn.next()) {}
+        for (; t !== null && t.tok !== "("; t = tkn.next()) { }
         stack.push(new scope("rpc", "(", position.from(t.pos)));
         break;
       }
       case "returns": {
         // take next token until reach left paren
         let t = tkn.next();
-        for (; t !== null && t.tok !== "("; t = tkn.next()) {}
+        for (; t !== null && t.tok !== "("; t = tkn.next()) { }
         stack.push(new scope("returns", "(", position.from(t.pos)));
         break;
       }
       case "service": {
         // take next token until reach left brace
         let t = tkn.next();
-        for (; t !== null && t.tok !== "{"; t = tkn.next()) {}
+        for (; t !== null && t.tok !== "{"; t = tkn.next()) { }
         stack.push(new scope("service", "{", position.from(t.pos)));
         break;
       }
