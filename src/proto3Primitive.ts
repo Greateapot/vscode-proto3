@@ -1,6 +1,6 @@
 'use strict';
 
-export module Proto3Primitive {
+export namespace Proto3Primitive {
 
     export const primitiveTypes = [
         'double',

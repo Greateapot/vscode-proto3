@@ -2,8 +2,10 @@
 
 import vscode = require("vscode");
 import cp = require("child_process");
+import path = require("path");
 
 import { Proto3Configuration } from "./proto3Configuration";
+import { Proto3Import } from "./proto3Import";
 
 export class Proto3Compiler {
     private _config: Proto3Configuration;
@@ -32,7 +34,7 @@ export class Proto3Compiler {
     public compileActiveProto() {
         let editor = vscode.window.activeTextEditor;
         if (editor && editor.document.languageId == "proto3") {
-            let fileName = editor.document.fileName;
+            let fileName = editor.document.uri.fsPath;
             let args = this._config.getProtocOptions().concat(fileName);
 
             this.runProtoc(args, undefined, (stdout, stderr) => {
@@ -50,7 +52,11 @@ export class Proto3Compiler {
         if (!opts) {
             opts = {};
         }
-        opts = Object.assign(opts, { cwd: vscode.workspace.rootPath });
+
+        const activeWorkspaceFolder = Proto3Import.getActiveWorkspaceFolder();
+
+        opts = Object.assign(opts, { cwd: activeWorkspaceFolder.uri.fsPath });
+
         cp.execFile(protocPath, args, opts, (err, stdout, stderr) => {
             if (err && stdout.length == 0 && stderr.length == 0) {
                 // Assume the OS error if no messages to buffers because

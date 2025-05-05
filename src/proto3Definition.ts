@@ -4,6 +4,7 @@ import fs = require('fs');
 import path = require('path');
 import vscode = require('vscode');
 import fg = require('fast-glob');
+
 import { guessScope, Proto3ScopeKind } from './proto3ScopeGuesser';
 import { Proto3Import } from './proto3Import';
 import { Proto3Primitive } from './proto3Primitive';
@@ -81,11 +82,9 @@ export class Proto3DefinitionProvider implements vscode.DefinitionProvider {
     }
 
     private async findImportDefinition(importFileName: string): Promise<vscode.Location> {
-        const files = await fg(path.join(vscode.workspace.rootPath, '**', importFileName));
+        const activeWorkspaceFolder = Proto3Import.getActiveWorkspaceFolder();
+        const files = await fg(path.join(activeWorkspaceFolder.uri.fsPath, '**', importFileName));
         const importPath = files[0].toString();
-        // const data = fs.readFileSync(importPath);
-        // const lines = data.toString().split('\n');
-        // const lastLine = lines[lines.length  - 1];
         const uri = vscode.Uri.file(importPath);
         const definitionStartPosition = new vscode.Position(0, 0);
         const definitionEndPosition = new vscode.Position(0, 0);

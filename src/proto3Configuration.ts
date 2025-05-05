@@ -3,6 +3,7 @@
 import vscode = require('vscode');
 import path = require('path');
 import fs = require('fs');
+import { Proto3Import } from './proto3Import';
 
 export class Proto3Configuration {
 
@@ -26,11 +27,9 @@ export class Proto3Configuration {
     }
 
     public getProtoSourcePath(): string {
-        let activeEditor = vscode.window.activeTextEditor;
-        let activeEditorUri = activeEditor.document.uri;
-        let activeWorkspaceFolder = vscode.workspace.getWorkspaceFolder(activeEditorUri);
+        let source = Proto3Import.getActiveWorkspaceFolder()?.uri.fsPath ?? '?';
         return this._configResolver.resolve(
-            this._config.get<string>('compile_all_path', activeWorkspaceFolder.uri.path));
+            this._config.get<string>('compile_all_path', source));
     }
 
     public getProtocArgs(): string[] {
@@ -38,9 +37,9 @@ export class Proto3Configuration {
             this._config.get<string[]>('options', []));
     }
 
-    public getProtocArgFiles(): string[] {
-        return this.getProtocArgs().filter(arg => !arg.startsWith('-'));
-    }
+    // public getProtocArgFiles(): string[] {
+    //     return this.getProtocArgs().filter(arg => !arg.startsWith('-'));
+    // }
 
     public getProtocOptions(): string[] {
         return this.getProtocArgs();
@@ -52,36 +51,12 @@ export class Proto3Configuration {
     }
 
     public getAllProtoPaths(): string[] {
-        return this.useAbsolutePath() ?
-            ProtoFinder.fromDirAbsolute(this.getProtoSourcePath()) :
-            this.getProtocArgFiles().concat(ProtoFinder.fromDir(this.getProtoSourcePath()));
-    }
-
-    public useAbsolutePath(): boolean {
-        return this._config.get<boolean>('use_absolute_path', false);
+        return ProtoFinder.find(this.getProtoSourcePath());
     }
 }
 
 class ProtoFinder {
-    static fromDir(root: string): string[] {
-        let search = function (dir: string): string[] {
-            let files = fs.readdirSync(dir);
-
-            let protos = files.filter(file => file.endsWith('.proto'))
-                .map(file => path.join(path.relative(root, dir), file));
-
-            files.map(file => path.join(dir, file))
-                .filter(file => fs.statSync(file).isDirectory())
-                .forEach(subDir => {
-                    protos = protos.concat(search(subDir))
-                });
-
-            return protos;
-        }
-        return search(root);
-    }
-
-    static fromDirAbsolute(root: string): string[] {
+    static find(root: string): string[] {
         let files: string[] = [];
         const getFilesRecursively = (directory) => {
             const filesInDirectory = fs.readdirSync(directory);
@@ -141,7 +116,12 @@ class ConfigurationResolver {
         let regexp = /\$\{(.*?)\}/g;
         const originalValue = value;
         const resolvedString = value.replace(regexp, (match: string, name: string) => {
+            if (name == 'workspaceFolder') {
+                return this.workspaceFolder?.uri.path;
+            }
+
             let newValue = (<any>this)[name];
+
             if (typeof newValue === 'string') {
                 return newValue;
             } else {
@@ -180,9 +160,5 @@ class ConfigurationResolver {
                 return this.resolve(newValue) + '';
             }
         });
-    }
-
-    private get workspaceRoot(): string {
-        return vscode.workspace.rootPath;
     }
 }

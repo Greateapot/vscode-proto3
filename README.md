@@ -50,7 +50,7 @@ Below is an example settings.json file which comes from
         "options": [
             "--proto_path=protos/v3",
             "--proto_path=protos/v2",
-            "--proto_path=${workspaceRoot}/proto",
+            "--proto_path=${workspaceFolder}/proto",
             "--proto_path=${env.GOPATH}/src",
             "--java_out=gen/java"
         ]
@@ -66,7 +66,6 @@ The possible fields under the `protoc` extension settings which can be defined i
 | ---------------- | -------- | ---------------- | ------------------------------------------------------------------------------ |
 | path             | string   | _protoc in PATH_ | Path to protoc. Defaults to protoc in PATH if omitted.                         |
 | compile_all_path | string   | Workspace Root   | Search Path for `Compile All Protos` action. Defaults to the Workspace Root    |
-| use_absolute_path| boolean  | false            | Set `true` for `compile_all_path` search files using absolute path             |
 | options          | string[] | []               | protoc compiler arguments/flags, required for proto validation and compilation |
 
 
@@ -74,11 +73,13 @@ The possible fields under the `protoc` extension settings which can be defined i
 
 These variables can be used to inject variables strings within the `protoc` extension configurations. See above for examples.
 
-| Variable      | Description                              |
-| ------------- | ---------------------------------------- |
-| config.*      | Refer settings items in ``Preferences``. |
-| env.*         | Refer environment variable.              |
-| workspaceRoot | Returns current workspace root path.     |
+| Variable        | Description                                   |
+| --------------- | --------------------------------------------- |
+| config.*        | Refer settings items in ``Preferences``.      |
+| env.*           | Refer environment variable.                   |
+| workspaceFolder | Returns current workspace folder root path.   |
+
+DONT USE `${workspaceRoot}`, USE `${workspaceFolder}` INSTEAD!
 
 ### Code Completion
 

@@ -4,6 +4,7 @@ import * as path from 'path';
 
 import vscode = require('vscode');
 import cp = require('child_process');
+
 import { Proto3CompletionItemProvider } from './proto3Suggest';
 import { Proto3Compiler } from './proto3Compiler';
 import { PROTO3_MODE } from './proto3Mode';
@@ -11,6 +12,7 @@ import { Proto3DefinitionProvider } from './proto3Definition';
 import { Proto3DocumentSymbolProvider } from './proto3SymbolProvider';
 import { Proto3RenameProvider } from './proto3Rename';
 import { Proto3Linter } from './proto3Lint';
+import { Proto3Import } from './proto3Import';
 
 export function activate(ctx: vscode.ExtensionContext): void {
 
@@ -31,22 +33,22 @@ export function activate(ctx: vscode.ExtensionContext): void {
     });
 
     ctx.subscriptions.push(vscode.commands.registerCommand('proto3.compile.one', () => {
-        const currentFile = vscode.window.activeTextEditor?.document;
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(currentFile.uri);
-        const compiler = new Proto3Compiler(workspaceFolder);
+        const activeWorkspaceFolder = Proto3Import.getActiveWorkspaceFolder();
+        if (activeWorkspaceFolder == undefined) return;
+        const compiler = new Proto3Compiler(activeWorkspaceFolder);
         compiler.compileActiveProto();
     }));
 
     ctx.subscriptions.push(vscode.commands.registerCommand('proto3.compile.all', () => {
-        const currentFile = vscode.window.activeTextEditor?.document;
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(currentFile.uri);
-        const compiler = new Proto3Compiler(workspaceFolder);
+        const activeWorkspaceFolder = Proto3Import.getActiveWorkspaceFolder();
+        if (activeWorkspaceFolder == undefined) return;
+        const compiler = new Proto3Compiler(activeWorkspaceFolder);
         compiler.compileAllProtos();
     }));
 
     ctx.subscriptions.push(vscode.commands.registerCommand('proto3.lint', () => {
         const currentFile = vscode.window.activeTextEditor?.document;
-        if (currentFile.languageId != 'proto3') { return; }
+        if (currentFile == undefined || currentFile.languageId != 'proto3') return;
         const linter = new Proto3Linter(currentFile, diagnosticCollection);
         linter.lint();
     }));
@@ -115,8 +117,4 @@ export function activate(ctx: vscode.ExtensionContext): void {
             return [new vscode.TextEdit(document.validateRange(new vscode.Range(0, 0, Infinity, Infinity)), stdout ? stdout.toString() : '')];
         },
     });
-}
-
-function deactivate() {
-    //
 }

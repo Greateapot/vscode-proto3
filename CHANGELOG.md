@@ -1,5 +1,10 @@
 ## Release Notes
 
+### 0.5.7
+- fix: Compile in multi-root workspaces
+- [`use_absolute_path` option](https://github.com/zxh0/vscode-proto3#fields) removed
+- husky reverted (why not?)
+
 ### 0.5.6
 - Syntax Validation now works using [protolint](https://github.com/yoheimuta/protolint)
 - [`compile_on_save` option](https://github.com/zxh0/vscode-proto3#fields) removed (may be reverted later)
