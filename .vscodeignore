@@ -2,7 +2,9 @@
 **/*.js.map
 .vscode/**
 out/test/**
-img/**
 tsconfig.json
 tslint.json
 .gitignore
+.nvmrc
+.prettierrc
+.husky/**
